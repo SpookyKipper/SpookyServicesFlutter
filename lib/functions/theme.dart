@@ -5,9 +5,9 @@ Color processColorLightDark(
   colorLight, colorDark
 ) {
   if (isDarkMode) {
-    return colorLight;
-  } else {
     return colorDark;
+  } else {
+    return colorLight;
   }
 }
 
