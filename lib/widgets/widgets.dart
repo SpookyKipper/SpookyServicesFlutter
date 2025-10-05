@@ -1,18 +1,19 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:spookyservices/functions/theme.dart';
-import '../../spookyservices.dart';
+import 'package:spookyservices/spookyservices.dart';
 
 class AppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
   final List<Widget>? actions;
   final bool backButton;
+  final bool automaticallyImplyLeading;
 
   const AppBar({
     super.key,
     required this.title,
     this.actions,
     this.backButton = false,
+    this.automaticallyImplyLeading = true,
   });
 
   @override
@@ -33,6 +34,7 @@ class AppBar extends StatelessWidget implements PreferredSizeWidget {
               ),
             )
           : null,
+      automaticallyImplyLeading: automaticallyImplyLeading,
       backgroundColor: colorScheme.onPrimary,
       middle: Text(
         title,
@@ -46,9 +48,7 @@ class AppBar extends StatelessWidget implements PreferredSizeWidget {
 class Button extends StatelessWidget {
   final String? text;
   final Widget? widget;
-
   final VoidCallback onPressed;
-
   const Button({super.key, this.text, required this.onPressed, this.widget});
 
   @override
@@ -63,7 +63,7 @@ class Button extends StatelessWidget {
         ),
       );
     }
-    
+
     late final Widget child;
     if (widget != null && text != null) {
       child = Row(children: [widget!, getText(text!)],);
