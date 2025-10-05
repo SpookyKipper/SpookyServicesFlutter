@@ -49,11 +49,18 @@ class Button extends StatelessWidget {
   final String? text;
   final Widget? widget;
   final VoidCallback onPressed;
-  const Button({super.key, this.text, required this.onPressed, this.widget});
+  final bool center;
+
+  const Button({
+    super.key,
+    this.text,
+    required this.onPressed,
+    this.widget,
+    this.center = false,
+  });
 
   @override
   Widget build(BuildContext context) {
-
     Text getText(String text) {
       return Text(
         text,
@@ -65,14 +72,21 @@ class Button extends StatelessWidget {
     }
 
     late final Widget child;
-    if (widget != null && text != null) {
-      child = Row(children: [widget!, getText(text!)],);
-    } else if (text != null) {
-      child = getText(text!);
-    } else if (widget != null) {
-      child = widget!;
-    } else {
-      throw Exception("Button must have either text and/or widget");
+    Widget getChild() {
+      if (widget != null && text != null) {
+        child = Row(children: [widget!, getText(text!)]);
+      } else if (text != null) {
+        child = getText(text!);
+      } else if (widget != null) {
+        child = widget!;
+      } else {
+        throw Exception("Button must have either text and/or widget");
+      }
+      if (center) {
+        return Center(child: child);
+      } else {
+        return child;
+      }
     }
 
     return ElevatedButton(
@@ -82,8 +96,9 @@ class Button extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),
+      
       onPressed: onPressed,
-      child: child,
+      child: getChild(),
     );
   }
 }
