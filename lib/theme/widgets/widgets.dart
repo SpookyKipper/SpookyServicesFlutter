@@ -44,13 +44,37 @@ class AppBar extends StatelessWidget implements PreferredSizeWidget {
 }
 
 class Button extends StatelessWidget {
-  final String text;
+  final String? text;
+  final Widget? widget;
+
   final VoidCallback onPressed;
 
-  const Button({super.key, required this.text, required this.onPressed});
+  const Button({super.key, this.text, required this.onPressed, this.widget});
 
   @override
   Widget build(BuildContext context) {
+
+    Text getText(String text) {
+      return Text(
+        text,
+        style: TextStyle(
+          fontSize: 14,
+          color: Colors.white.withValues(alpha: 0.9),
+        ),
+      );
+    }
+    
+    late final Widget child;
+    if (widget != null && text != null) {
+      child = Row(children: [widget!, getText(text!)],);
+    } else if (text != null) {
+      child = getText(text!);
+    } else if (widget != null) {
+      child = widget!;
+    } else {
+      throw Exception("Button must have either text and/or widget");
+    }
+
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
         backgroundColor: colorScheme.primaryContainer,
@@ -59,13 +83,7 @@ class Button extends StatelessWidget {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),
       onPressed: onPressed,
-      child: Text(
-        text,
-        style: TextStyle(
-          fontSize: 14,
-          color: Colors.white.withValues(alpha: 0.9),
-        ),
-      ),
+      child: child,
     );
   }
 }
