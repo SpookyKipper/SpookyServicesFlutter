@@ -1,7 +1,7 @@
 import 'package:spookyservices/helpers/shared_pref.dart';
 
 class LangHelper {
-  String language = sp.getString('language') ?? 'en';
+  String language = sp.getString('spookysrv.language') ?? 'en';
 
   String LocText(String textChi, String textEn) { //Localized Text
     if (language == 'en') {
@@ -18,7 +18,7 @@ class LangHelper {
 
 
   String getLang() {
-    return sp.getString("language") ?? 'en';
+    return sp.getString("spookysrv.language") ?? 'en';
   }
 }
 
