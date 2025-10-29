@@ -2,6 +2,71 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:spookyservices/functions/theme.dart';
 import 'package:spookyservices/spookyservices.dart';
+export 'package:flutter/material.dart' hide Card, AppBar;
+
+class Card1 extends StatelessWidget {
+  final Widget child;
+  final IconData? iconData;
+  final String? title;
+  final String? subtitle;
+  final List<Widget>? misc;
+  final bool contrast = false;
+
+  Card1({
+    super.key,
+    required this.child,
+    this.iconData,
+    this.title,
+    this.subtitle,
+    this.misc,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+
+    Color getBackgroundColor() {
+      if (contrast) {
+        return cLD(colorScheme.onPrimaryContainer, colorScheme.onPrimary);
+      } else {
+        return colorScheme.primaryContainer;
+      }
+    }
+
+
+    return Card(
+      color: getBackgroundColor(),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ...<Widget>[
+            ListTile(
+              leading: (iconData != null) ? Icon(iconData) : null,
+              title: title != null
+                  ? Text(
+                      title!,
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: Colors.white.withValues(alpha: 0.9),
+                      ),
+                    )
+                  : null,
+              subtitle: subtitle != null
+                  ? Text(
+                      subtitle!,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.white.withValues(alpha: 0.775),
+                      ),
+                    )
+                  : null,
+            ),
+          ],
+          ...?misc,
+        ],
+      ),
+    );
+  }
+}
 
 class AppBar extends StatelessWidget implements ObstructingPreferredSizeWidget {
   final String title;
@@ -37,7 +102,7 @@ class AppBar extends StatelessWidget implements ObstructingPreferredSizeWidget {
           : null,
       automaticallyImplyLeading: automaticallyImplyLeading,
       backgroundColor: cLD(colorScheme.primaryContainer, colorScheme.onPrimary),
-      middle: Text( 
+      middle: Text(
         title,
         style: TextStyle(color: Colors.white.withValues(alpha: 0.9)),
       ),
@@ -110,7 +175,7 @@ class Button extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),
-      
+
       onPressed: onPressed,
       child: getChild(),
     );
