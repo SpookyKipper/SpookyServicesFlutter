@@ -1,8 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:spookyservices/functions/theme.dart';
 import 'package:spookyservices/spookyservices.dart';
 
-class AppBar extends StatelessWidget implements PreferredSizeWidget {
+class AppBar extends StatelessWidget implements ObstructingPreferredSizeWidget {
   final String title;
   final List<Widget>? actions;
   final bool backButton;
@@ -35,14 +36,17 @@ class AppBar extends StatelessWidget implements PreferredSizeWidget {
             )
           : null,
       automaticallyImplyLeading: automaticallyImplyLeading,
-      backgroundColor: colorScheme.onPrimary,
-      middle: Text(
+      backgroundColor: cLD(colorScheme.primaryContainer, colorScheme.onPrimary),
+      middle: Text( 
         title,
         style: TextStyle(color: Colors.white.withValues(alpha: 0.9)),
       ),
       trailing: (actions != null && actions!.isNotEmpty) ? actions![0] : null,
     );
   }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
 class Button extends StatelessWidget {
@@ -50,6 +54,7 @@ class Button extends StatelessWidget {
   final Widget? widget;
   final VoidCallback onPressed;
   final bool center;
+  final bool contrast;
 
   const Button({
     super.key,
@@ -57,6 +62,7 @@ class Button extends StatelessWidget {
     required this.onPressed,
     this.widget,
     this.center = false,
+    this.contrast = false,
   });
 
   @override
@@ -89,9 +95,17 @@ class Button extends StatelessWidget {
       }
     }
 
+    Color getBackgroundColor() {
+      if (contrast) {
+        return cLD(colorScheme.onPrimaryContainer, colorScheme.onPrimary);
+      } else {
+        return colorScheme.primaryContainer;
+      }
+    }
+
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
-        backgroundColor: colorScheme.primaryContainer,
+        backgroundColor: getBackgroundColor(),
         foregroundColor: Colors.white.withValues(alpha: 0.9),
         padding: const EdgeInsets.symmetric(horizontal: 16),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),

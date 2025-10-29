@@ -7,6 +7,11 @@ bool isDarkMode = true;
 
 bool setDarkMode(bool darkMode) {
   isDarkMode = darkMode;
+  if (colorSetting == 0) {
+    colorScheme = (isDarkMode)
+        ? MaterialTheme.darkScheme()
+        : MaterialTheme.lightScheme();
+  }
   return true;
 }
 
