@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:spookyservices/helpers/shared_pref.dart';
 import 'theme/colors.dart';
 
 ColorScheme colorScheme = MaterialTheme.darkScheme();
@@ -27,4 +28,8 @@ bool setColorSetting(int setting) {
 
 ColorScheme getColorScheme() {
   return colorScheme;
+}
+
+void initSharedPreferencesSpookySrv() async {
+  SharedPreferencesFunctions.init();
 }

@@ -5,20 +5,19 @@ import 'package:spookyservices/spookyservices.dart';
 export 'package:flutter/material.dart' hide Card, AppBar;
 
 class Card1 extends StatelessWidget {
-  final Widget child;
-  final IconData? iconData;
+  final IconData? icon;
   final String? title;
   final String? subtitle;
   final List<Widget>? misc;
-  final bool contrast = false;
+  final bool contrast;
 
   Card1({
     super.key,
-    required this.child,
-    this.iconData,
+    this.icon,
     this.title,
     this.subtitle,
     this.misc,
+    this.contrast = false,
   });
 
   @override
@@ -40,7 +39,7 @@ class Card1 extends StatelessWidget {
         children: [
           ...<Widget>[
             ListTile(
-              leading: (iconData != null) ? Icon(iconData) : null,
+              leading: (icon != null) ? Icon(icon) : null,
               title: title != null
                   ? Text(
                       title!,
@@ -55,7 +54,7 @@ class Card1 extends StatelessWidget {
                       subtitle!,
                       style: TextStyle(
                         fontSize: 14,
-                        color: Colors.white.withValues(alpha: 0.775),
+                        color: Colors.white.withValues(alpha: 0.8),
                       ),
                     )
                   : null,

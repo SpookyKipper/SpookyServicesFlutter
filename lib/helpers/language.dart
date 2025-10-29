@@ -5,7 +5,7 @@ class LangHelper {
 
   String locText(String textChi, String textEn) {
     //Localized Text
-    if (language == 'en') {
+    if (getLang() == 'en') {
       return textEn;
     } else {
       return textChi;
@@ -22,7 +22,7 @@ class LangHelper {
 
   void setLang(String lang) {
     language = lang;
-    sp.setString('language', lang);
+    sp.setString('spookysrv.language', lang);
   }
 
   String getLang() {
