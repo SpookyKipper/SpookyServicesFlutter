@@ -1,7 +1,6 @@
 import 'package:go_router/go_router.dart';
 import 'package:spookyservices/widgets/widgets.dart';
 import 'package:flutter/material.dart';
-
 // ---------------------------------------------------------------------------
 // DATA MODELS
 // ---------------------------------------------------------------------------
@@ -66,10 +65,9 @@ class AppShell extends StatefulWidget {
 class _AppShellState extends State<AppShell> {
   late ScrollController _scrollController;
   bool _isFirstLoad = true;
-  String? _titleOverride; 
-  // removed _lastPath (No longer needed)
+  String? _titleOverride;
+  String _lastPath = "";
 
-  /// Call this to set a temporary title (e.g. "Downloading...")
   void setTitle(String newTitle) {
     if (_titleOverride != newTitle) {
       setState(() { _titleOverride = newTitle; });
@@ -80,6 +78,7 @@ class _AppShellState extends State<AppShell> {
   void initState() {
     super.initState();
     _scrollController = ScrollController();
+    _lastPath = widget.state.uri.path;
   }
 
   @override
@@ -88,73 +87,62 @@ class _AppShellState extends State<AppShell> {
     super.dispose();
   }
 
-  // --- FIX: ROBUST RESET LOGIC ---
   @override
   void didUpdateWidget(covariant AppShell oldWidget) {
     super.didUpdateWidget(oldWidget);
-
-    final String oldPath = oldWidget.state.uri.path;
     final String newPath = widget.state.uri.path;
     
-    // DIRECT COMPARISON: If the route changed, reset everything.
-    if (oldPath != newPath) {
+    if (newPath != _lastPath) {
+      final ShellConfig oldConfig = _getConfig(_lastPath);
+      final ShellConfig newConfig = _getConfig(newPath);
       
-      // 1. Reset Title Override
       _titleOverride = null;
-
-      // 2. Handle Scroll/Layout Resets
-      final ShellConfig oldConfig = _getConfig(oldPath, oldWidget.routeConfig);
-      final ShellConfig newConfig = _getConfig(newPath, widget.routeConfig);
+      _lastPath = newPath;
 
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!_scrollController.hasClients || !mounted) return;
 
-        // A. Going TO a Locked Page -> Jump to Top
+        // 1. Going TO Locked Page -> Jump Top
         if (newConfig.isLocked) {
            _scrollController.jumpTo(0.0);
            return;
         }
 
-        // B. Going FROM Locked TO Unlocked -> Force Collapse
+        // 2. Locked -> Unlocked -> Force Collapse
         if (oldConfig.isLocked && !newConfig.isLocked) {
            final double expanded = MediaQuery.of(context).size.height * 0.4;
-           final double collapsed = kToolbarHeight;
-           _scrollController.jumpTo(expanded - collapsed);
+           // Jump to the offset that leaves only the collapsed header visible
+           _scrollController.jumpTo(expanded - kToolbarHeight); 
            return;
         }
-        
-        // C. Unlocked -> Unlocked: Keep scroll position (Do nothing)
       });
     }
   }
 
-  // Helper to look up config safely
-  ShellConfig _getConfig(String path, Map<String, ShellConfig> configMap) {
-    return configMap[path] ??
-           configMap['/'] ??
+  ShellConfig _getConfig(String path) {
+    return widget.routeConfig[path] ??
+           widget.routeConfig['/'] ??
            const ShellConfig(title: "App", icon: Icons.apps);
   }
-
-  double uiLerp(double a, double b, double t) => a + (b - a) * t;
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final topPadding = MediaQuery.of(context).padding.top;
     
     final String currentPath = widget.state.uri.path;
-    final ShellConfig config = _getConfig(currentPath, widget.routeConfig);
+    final ShellConfig config = _getConfig(currentPath);
 
-    // Use override if set, otherwise config title
     final String displayTitle = _titleOverride ?? config.title;
-    
     final bool isLocked = config.isLocked;
     final IconData icon = config.icon;
     final List<ShellAction> actions = config.actions;
 
+    // --- HEIGHT CALCULATIONS ---
+    // User Requirement: "final double collapsedHeight = kToolbarHeight; no topPadding"
     final double collapsedHeight = kToolbarHeight;
+    
     final double expandedHeight = isLocked
-        ? kToolbarHeight
+        ? collapsedHeight
         : MediaQuery.of(context).size.height * 0.4;
 
     final double scrollOffsetToCollapse = expandedHeight - collapsedHeight;
@@ -219,12 +207,15 @@ class _AppShellState extends State<AppShell> {
                     flexibleSpace: LayoutBuilder(
                       builder: (context, constraints) {
                         final currentHeight = constraints.maxHeight;
+                        
+                        // Progress
                         final double progress = isLocked
                             ? 0.0
                             : ((currentHeight - collapsedHeight) /
                                     (expandedHeight - collapsedHeight))
                                 .clamp(0.0, 1.0);
 
+                        // Colors
                         final collapsedBg = const Color(0xFF6F65DC);
                         final expandedBg = colorScheme.primaryContainer;
                         final backgroundColor = Color.lerp(collapsedBg, expandedBg, progress)!;
@@ -233,22 +224,30 @@ class _AppShellState extends State<AppShell> {
                         final onExpandedColor = colorScheme.onPrimaryContainer;
                         final contentColor = Color.lerp(onCollapsedColor, onExpandedColor, progress)!;
 
-                        final double collapsedBtnY = 0.0;
-                        final double expandedBtnY = expandedHeight - kToolbarHeight - 4.0;
-                        final double currentBtnY = uiLerp(collapsedBtnY, expandedBtnY, progress);
+                       
+
+                        // --- POSITIONS ---
+                        
+                        // 1. BUTTONS (Pin to Bottom)
+                        // By positioning at (Height - ToolbarHeight), we ensure:
+                        // Collapsed (H=56): Pos = 0 (Top/Fit)
+                        // Expanded (H=300): Pos = 244 (Bottom)
+                        final double buttonsY = currentHeight - kToolbarHeight;
+
+                         final titlePaddingTop = buttonsY * (1- progress);
 
                         return Container(
                           color: backgroundColor,
                           child: Stack(
                             children: [
-                              Align(
-                                alignment: Alignment.center,
-                                child: Padding(
-                                  padding: EdgeInsets.only(
-                                    top: topPadding + (30.0 * progress),
-                                  ),
-                                  child: Transform.scale(
-                                    scale: 1.0 + (0.5 * progress),
+                              // --- TITLE (Vertically Centered) ---
+                              // Using Center() widget ensures it's always in the middle
+                              // of whatever the current height is.
+                              Center(
+                                child: Transform.scale(
+                                  scale: 1.0 + (0.5 * progress),
+                                  child: Padding(
+                                    padding: EdgeInsets.only(top: titlePaddingTop),
                                     child: Row(
                                       mainAxisSize: MainAxisSize.min,
                                       mainAxisAlignment: MainAxisAlignment.center,
@@ -268,18 +267,17 @@ class _AppShellState extends State<AppShell> {
                                   ),
                                 ),
                               ),
+
+                              // --- BUTTONS ---
                               Positioned(
-                                top: currentBtnY,
+                                top: buttonsY,
                                 left: 0,
                                 right: 0,
                                 height: kToolbarHeight,
                                 child: Padding(
-                                  padding: EdgeInsets.only(
-                                    top: topPadding * (1.0 - progress),
-                                    left: 4.0,
-                                    right: 4.0,
-                                  ),
+                                  padding: const EdgeInsets.symmetric(horizontal: 4.0),
                                   child: Row(
+                                    crossAxisAlignment: CrossAxisAlignment.center,
                                     children: [
                                       if (context.canPop())
                                         IconButton(
@@ -338,6 +336,13 @@ class OneUiScrollPhysics extends ClampingScrollPhysics {
     return super.createBallisticSimulation(position, velocity);
   }
 }
+
+
+
+
+
+
+
 
 CustomTransitionPage buildPageWithTransition({
   required BuildContext context,
