@@ -185,12 +185,15 @@ class _AppShellState extends State<AppShell> {
               }
               return false;
             },
-            child: NestedScrollView(
-              controller: _scrollController,
-              physics: isLocked
-                  ? const NeverScrollableScrollPhysics()
-                  : OneUiScrollPhysics(boundary: scrollOffsetToCollapse),
-              headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+            child: MediaQuery.removePadding(
+              context: context,
+              removeBottom: true,
+              child: NestedScrollView(
+                controller: _scrollController,
+                physics: isLocked
+                    ? const NeverScrollableScrollPhysics()
+                    : OneUiScrollPhysics(boundary: scrollOffsetToCollapse),
+                headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
                 return [
                   SliverAppBar(
                     pinned: true,
@@ -312,7 +315,12 @@ class _AppShellState extends State<AppShell> {
                   ),
                 ];
               },
-              body: widget.child,
+              body: MediaQuery.removePadding(
+                context: context,
+                removeTop: true,
+                child: widget.child,
+              ),
+              ),
             ),
           ),
         ),
