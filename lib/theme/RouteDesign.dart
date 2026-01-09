@@ -1,21 +1,6 @@
-// ---------------------------------------------------------------------------
-// 1. THE UPDATED SHELL (NestedScrollView + SliverAppBar)
-// ---------------------------------------------------------------------------
 import 'package:go_router/go_router.dart';
-import 'package:spookyservices/spookyservices.dart';
 import 'package:spookyservices/widgets/widgets.dart';
-
-import '../functions/theme.dart';
-
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-
-import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
 // ---------------------------------------------------------------------------
 // DATA MODELS
