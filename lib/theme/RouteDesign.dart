@@ -336,6 +336,21 @@ class OneUiScrollPhysics extends ClampingScrollPhysics {
   OneUiScrollPhysics applyTo(ScrollPhysics? ancestor) {
     return OneUiScrollPhysics(boundary: boundary, parent: buildParent(ancestor));
   }
+
+  // Clamp the outer scroll position between 0 and boundary so body overscroll
+  // can't drag the header into a floating/zero-height state.
+  @override
+  double applyBoundaryConditions(ScrollMetrics position, double value) {
+    if (value < 0.0) {
+      // Trying to scroll past the top.
+      return value - 0.0;
+    }
+    if (value > boundary) {
+      // Trying to scroll past the collapsed boundary.
+      return value - boundary;
+    }
+    return 0.0;
+  }
   @override
   Simulation? createBallisticSimulation(ScrollMetrics position, double velocity) {
     final isAtCollapsedBoundary = position.pixels >= boundary - 0.5;
