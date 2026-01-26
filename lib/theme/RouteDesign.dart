@@ -378,11 +378,14 @@ CustomTransitionPage buildPageWithTransition({
 
   return CustomTransitionPage(
     key: state.pageKey,
-    child: child,
+    child: Padding(
+      padding: const EdgeInsets.only(top: 8.0),
+      child: child,
+    ),
     // You can adjust duration separately for Locked vs Unlocked if you want, 
     // but keeping them same is usually fine.
-    transitionDuration: const Duration(milliseconds: 600),
-    reverseTransitionDuration: const Duration(milliseconds: 600),
+    transitionDuration: const Duration(milliseconds: 400),
+    reverseTransitionDuration: const Duration(milliseconds: 400),
     transitionsBuilder: (context, animation, secondaryAnimation, child) {
       
       // 2. LOCKED: Use Flutter's built-in FadeTransition
@@ -396,9 +399,13 @@ CustomTransitionPage buildPageWithTransition({
 
       // 3. UNLOCKED: Use your Custom Slide Transition
       return SlideExitTransition(
-        animation: secondaryAnimation,
+        animation: secondaryAnimation.drive(
+          CurveTween(curve: const Interval(0.0, 0.5, curve: Curves.linear)),
+        ),
         child: SlideEnterTransition(
-          animation: animation,
+          animation: animation.drive(
+            CurveTween(curve: const Interval(0.55, 1.0, curve: Curves.linear)),
+          ),
           child: child,
         ),
       );
@@ -432,7 +439,7 @@ class SlideEnterTransition extends StatelessWidget {
           opacity: t,
           child: Transform.translate(
             // Slide UP from bottom (30px -> 0px)
-            offset: Offset(0, 30.0 * (1.0 - t)), 
+            offset: Offset(0, 15.0 * (1.0 - t)), 
             child: child,
           ),
         );
@@ -468,7 +475,7 @@ class SlideExitTransition extends StatelessWidget {
           child: Transform.translate(
             // Slide UP slightly (-30px) as it fades out.
             // This creates the "Go up a little too" effect.
-            offset: Offset(0, -30.0 * t),
+            offset: Offset(0, -5.0 * t),
             child: child,
           ),
         );
