@@ -139,11 +139,11 @@ class _AppShellState extends State<AppShell> {
 
     // --- HEIGHT CALCULATIONS ---
     // User Requirement: "final double collapsedHeight = kToolbarHeight; no topPadding"
-    final double collapsedHeight = kToolbarHeight;
+    final double collapsedHeight = kToolbarHeight ; // ~92.0
     
     final double expandedHeight = isLocked
         ? collapsedHeight
-        : MediaQuery.of(context).size.height * 0.4;
+        : MediaQuery.of(context).size.height * 0.3; // 30% of screen height;
 
     final double scrollOffsetToCollapse = expandedHeight - collapsedHeight;
 
@@ -214,13 +214,16 @@ class _AppShellState extends State<AppShell> {
                         // Progress
                         final double progress = isLocked
                             ? 0.0
-                            : ((currentHeight - collapsedHeight) /
-                                    (expandedHeight - collapsedHeight))
+                            : ((currentHeight - collapsedHeight * 1.638736229) /
+                                    (expandedHeight * 1.098290598 - collapsedHeight * 1.638736229))
                                 .clamp(0.0, 1.0);
 
+                       
+
                         // Colors
-                        final collapsedBg = const Color(0xFF6F65DC);
-                        final expandedBg = colorScheme.primaryContainer;
+                        final collapsedBg = const Color(0xfa6f65dc);
+                        final expandedBg = const Color(0x100f10);
+                        print("Prrgress: $progress, $currentHeight, $collapsedHeight, $expandedHeight");
                         final backgroundColor = Color.lerp(collapsedBg, expandedBg, progress)!;
 
                         final onCollapsedColor = Colors.white;
@@ -378,8 +381,8 @@ CustomTransitionPage buildPageWithTransition({
 
   return CustomTransitionPage(
     key: state.pageKey,
-    child: Padding(
-      padding: const EdgeInsets.only(top: 8.0),
+    child: isLocked ? child : Padding(
+      padding: const EdgeInsets.only(top: 6.5),
       child: child,
     ),
     // You can adjust duration separately for Locked vs Unlocked if you want, 
