@@ -254,21 +254,25 @@ class _AppShellState extends State<AppShell> {
                                   scale: 1.0 + (0.5 * progress),
                                   child: Padding(
                                     padding: EdgeInsets.only(top: titlePaddingTop),
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        Icon(icon, color: contentColor, size: 20),
-                                        const SizedBox(width: 8),
-                                        Text(
-                                          displayTitle,
-                                          style: TextStyle(
-                                            color: contentColor,
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.w600,
+                                    child: AnimatedSwitcher(
+                                      duration: const Duration(milliseconds: 300),
+                                      child: Row(
+                                        key: ValueKey(displayTitle),
+                                        mainAxisSize: MainAxisSize.min,
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          Icon(icon, color: contentColor, size: 20),
+                                          const SizedBox(width: 8),
+                                          Text(
+                                            displayTitle,
+                                            style: TextStyle(
+                                              color: contentColor,
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.w600,
+                                            ),
                                           ),
-                                        ),
-                                      ],
+                                        ],
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -293,18 +297,25 @@ class _AppShellState extends State<AppShell> {
                                       else
                                         const SizedBox(width: 48),
                                       const Spacer(),
-                                      ...actions.map((action) {
-                                        return Row(
+                                      AnimatedSwitcher(
+                                        duration: const Duration(milliseconds: 300),
+                                        child: Row(
+                                          key: ValueKey(currentPath),
                                           mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            IconButton(
-                                              icon: Icon(action.icon, color: contentColor),
-                                              onPressed: () => action.onPressed(context),
-                                            ),
-                                            const SizedBox(width: 4),
-                                          ],
-                                        );
-                                      }),
+                                          children: actions.map((action) {
+                                            return Row(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                IconButton(
+                                                  icon: Icon(action.icon, color: contentColor),
+                                                  onPressed: () => action.onPressed(context),
+                                                ),
+                                                const SizedBox(width: 4),
+                                              ],
+                                            );
+                                          }).toList(),
+                                        ),
+                                      ),
                                       const SizedBox(width: 4),
                                     ],
                                   ),
