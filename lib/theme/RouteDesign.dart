@@ -392,10 +392,7 @@ CustomTransitionPage buildPageWithTransition({
 
   return CustomTransitionPage(
     key: state.pageKey,
-    child: isLocked ? child : Padding(
-      padding: const EdgeInsets.only(top: 6.5),
-      child: child,
-    ),
+    child: child,
     // You can adjust duration separately for Locked vs Unlocked if you want, 
     // but keeping them same is usually fine.
     transitionDuration: const Duration(milliseconds: 400),
