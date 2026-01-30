@@ -110,7 +110,7 @@ class _AppShellState extends State<AppShell> {
 
         // 2. Locked -> Unlocked -> Force Collapse
         if (oldConfig.isLocked && !newConfig.isLocked) {
-           final double expanded = MediaQuery.of(context).size.height * 0.4;
+           final double expanded = MediaQuery.of(context).size.height * 0.35;
            // Jump to the offset that leaves only the collapsed header visible
            _scrollController.jumpTo(expanded - kToolbarHeight); 
            return;
@@ -143,7 +143,7 @@ class _AppShellState extends State<AppShell> {
     
     final double expandedHeight = isLocked
         ? collapsedHeight
-        : MediaQuery.of(context).size.height * 0.3; // 30% of screen height;
+        : MediaQuery.of(context).size.height * 0.35; // 35% of screen height;
 
     final double scrollOffsetToCollapse = expandedHeight - collapsedHeight;
 
@@ -392,7 +392,11 @@ CustomTransitionPage buildPageWithTransition({
 
   return CustomTransitionPage(
     key: state.pageKey,
-    child: child,
+    child: child, 
+    // isLocked ? child : Padding(
+    //   padding: const EdgeInsets.only(top: 6.5),
+    //   child: child,
+    // )
     // You can adjust duration separately for Locked vs Unlocked if you want, 
     // but keeping them same is usually fine.
     transitionDuration: const Duration(milliseconds: 400),
