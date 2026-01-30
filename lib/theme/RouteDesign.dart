@@ -53,7 +53,8 @@ class AppShell extends StatefulWidget {
   });
 
   static _AppShellState of(BuildContext context) {
-    final AppShellScope? scope = context.dependOnInheritedWidgetOfExactType<AppShellScope>();
+    final AppShellScope? scope = context
+        .dependOnInheritedWidgetOfExactType<AppShellScope>();
     assert(scope != null, "No AppShell found in context");
     return scope!.data;
   }
@@ -70,7 +71,9 @@ class _AppShellState extends State<AppShell> {
 
   void setTitle(String newTitle) {
     if (_titleOverride != newTitle) {
-      setState(() { _titleOverride = newTitle; });
+      setState(() {
+        _titleOverride = newTitle;
+      });
     }
   }
 
@@ -91,11 +94,11 @@ class _AppShellState extends State<AppShell> {
   void didUpdateWidget(covariant AppShell oldWidget) {
     super.didUpdateWidget(oldWidget);
     final String newPath = widget.state.uri.path;
-    
+
     if (newPath != _lastPath) {
       final ShellConfig oldConfig = _getConfig(_lastPath);
       final ShellConfig newConfig = _getConfig(newPath);
-      
+
       _titleOverride = null;
       _lastPath = newPath;
 
@@ -104,16 +107,16 @@ class _AppShellState extends State<AppShell> {
 
         // 1. Going TO Locked Page -> Jump Top
         if (newConfig.isLocked) {
-           _scrollController.jumpTo(0.0);
-           return;
+          _scrollController.jumpTo(0.0);
+          return;
         }
 
         // 2. Locked -> Unlocked -> Force Collapse
         if (oldConfig.isLocked && !newConfig.isLocked) {
-           final double expanded = MediaQuery.of(context).size.height * 0.35;
-           // Jump to the offset that leaves only the collapsed header visible
-           _scrollController.jumpTo(expanded - kToolbarHeight); 
-           return;
+          final double expanded = MediaQuery.of(context).size.height * 0.35;
+          // Jump to the offset that leaves only the collapsed header visible
+          _scrollController.jumpTo(expanded - kToolbarHeight);
+          return;
         }
       });
     }
@@ -121,14 +124,14 @@ class _AppShellState extends State<AppShell> {
 
   ShellConfig _getConfig(String path) {
     return widget.routeConfig[path] ??
-           widget.routeConfig['/'] ??
-           const ShellConfig(title: "App", icon: Icons.apps);
+        widget.routeConfig['/'] ??
+        const ShellConfig(title: "App", icon: Icons.apps);
   }
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    
+
     final String currentPath = widget.state.uri.path;
     final ShellConfig config = _getConfig(currentPath);
 
@@ -139,8 +142,8 @@ class _AppShellState extends State<AppShell> {
 
     // --- HEIGHT CALCULATIONS ---
     // User Requirement: "final double collapsedHeight = kToolbarHeight; no topPadding"
-    final double collapsedHeight = kToolbarHeight ; // ~92.0
-    
+    final double collapsedHeight = kToolbarHeight; // ~92.0
+
     final double expandedHeight = isLocked
         ? collapsedHeight
         : MediaQuery.of(context).size.height * 0.35; // 35% of screen height;
@@ -167,7 +170,8 @@ class _AppShellState extends State<AppShell> {
             onNotification: (notification) {
               if (_scrollController.hasClients && !isLocked) {
                 final currentOffset = _scrollController.offset;
-                if (currentOffset > 0 && currentOffset < scrollOffsetToCollapse) {
+                if (currentOffset > 0 &&
+                    currentOffset < scrollOffsetToCollapse) {
                   final double midpoint = scrollOffsetToCollapse / 2;
                   final double targetOffset = (currentOffset > midpoint)
                       ? scrollOffsetToCollapse
@@ -194,146 +198,177 @@ class _AppShellState extends State<AppShell> {
                     ? const NeverScrollableScrollPhysics()
                     : OneUiScrollPhysics(boundary: scrollOffsetToCollapse),
                 headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-                return [
-                  SliverAppBar(
-                    pinned: true,
-                    floating: false,
-                    stretch: false,
-                    expandedHeight: expandedHeight,
-                    collapsedHeight: collapsedHeight,
-                    toolbarHeight: kToolbarHeight,
-                    backgroundColor: Colors.transparent,
-                    leading: null,
-                    actions: null,
-                    automaticallyImplyLeading: false,
+                  return [
+                    SliverAppBar(
+                      pinned: true,
+                      floating: false,
+                      stretch: false,
+                      expandedHeight: expandedHeight,
+                      collapsedHeight: collapsedHeight,
+                      toolbarHeight: kToolbarHeight,
+                      backgroundColor: Colors.transparent,
+                      leading: null,
+                      actions: null,
+                      automaticallyImplyLeading: false,
 
-                    flexibleSpace: LayoutBuilder(
-                      builder: (context, constraints) {
-                        final currentHeight = constraints.maxHeight;
-                        
-                        // Progress
-                        final double progress = isLocked
-                            ? 0.0
-                            : ((currentHeight - collapsedHeight * 1.638736229) /
-                                    (expandedHeight * 1.098290598 - collapsedHeight * 1.638736229))
-                                .clamp(0.0, 1.0);
+                      flexibleSpace: LayoutBuilder(
+                        builder: (context, constraints) {
+                          final currentHeight = constraints.maxHeight;
 
-                       
+                          // Progress
+                          final double progress = isLocked
+                              ? 0.0
+                              : ((currentHeight -
+                                            collapsedHeight * 1.638736229) /
+                                        (expandedHeight * 1.098290598 -
+                                            collapsedHeight * 1.638736229))
+                                    .clamp(0.0, 1.0);
 
-                        // Colors
-                        final collapsedBg = const Color(0xfa6f65dc);
-                        final expandedBg = const Color(0x100f10);
-                        print("Prrgress: $progress, $currentHeight, $collapsedHeight, $expandedHeight");
-                        final backgroundColor = Color.lerp(collapsedBg, expandedBg, progress)!;
+                          // Colors
+                          final collapsedBg = const Color(0xfa6f65dc);
+                          final expandedBg = const Color(0x100f10);
+                          print(
+                            "Prrgress: $progress, $currentHeight, $collapsedHeight, $expandedHeight",
+                          );
+                          final backgroundColor = Color.lerp(
+                            collapsedBg,
+                            expandedBg,
+                            progress,
+                          )!;
 
-                        final onCollapsedColor = Colors.white;
-                        final onExpandedColor = colorScheme.onPrimaryContainer;
-                        final contentColor = Color.lerp(onCollapsedColor, onExpandedColor, progress)!;
+                          final onCollapsedColor = Colors.white;
+                          final onExpandedColor =
+                              colorScheme.onPrimaryContainer;
+                          final contentColor = Color.lerp(
+                            onCollapsedColor,
+                            onExpandedColor,
+                            progress,
+                          )!;
 
-                       
+                          // --- POSITIONS ---
 
-                        // --- POSITIONS ---
-                        
-                        // 1. BUTTONS (Pin to Bottom)
-                        // By positioning at (Height - ToolbarHeight), we ensure:
-                        // Collapsed (H=56): Pos = 0 (Top/Fit)
-                        // Expanded (H=300): Pos = 244 (Bottom)
-                        final double buttonsY = currentHeight - kToolbarHeight;
+                          // 1. BUTTONS (Pin to Bottom)
+                          // By positioning at (Height - ToolbarHeight), we ensure:
+                          // Collapsed (H=56): Pos = 0 (Top/Fit)
+                          // Expanded (H=300): Pos = 244 (Bottom)
+                          final double buttonsY =
+                              currentHeight - kToolbarHeight;
 
-                         final titlePaddingTop = buttonsY * (1- progress);
+                          final titlePaddingTop = buttonsY * (1 - progress);
 
-                        return Container(
-                          color: backgroundColor,
-                          child: Stack(
-                            children: [
-                              // --- TITLE (Vertically Centered) ---
-                              // Using Center() widget ensures it's always in the middle
-                              // of whatever the current height is.
-                              Center(
-                                child: Transform.scale(
-                                  scale: 1.0 + (0.5 * progress),
-                                  child: Padding(
-                                    padding: EdgeInsets.only(top: titlePaddingTop),
-                                    child: AnimatedSwitcher(
-                                      duration: const Duration(milliseconds: 300),
-                                      child: Row(
-                                        key: ValueKey(displayTitle),
-                                        mainAxisSize: MainAxisSize.min,
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        children: [
-                                          Icon(icon, color: contentColor, size: 20),
-                                          const SizedBox(width: 8),
-                                          Text(
-                                            displayTitle,
-                                            style: TextStyle(
+                          return Container(
+                            color: backgroundColor,
+                            child: Stack(
+                              children: [
+                                // --- TITLE (Vertically Centered) ---
+                                // Using Center() widget ensures it's always in the middle
+                                // of whatever the current height is.
+                                Center(
+                                  child: Transform.scale(
+                                    scale: 1.0 + (0.5 * progress),
+                                    child: Padding(
+                                      padding: EdgeInsets.only(
+                                        top: titlePaddingTop,
+                                      ),
+                                      child: AnimatedSwitcher(
+                                        duration: const Duration(
+                                          milliseconds: 300,
+                                        ),
+                                        child: Row(
+                                          key: ValueKey(displayTitle),
+                                          mainAxisSize: MainAxisSize.min,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Icon(
+                                              icon,
                                               color: contentColor,
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.w600,
+                                              size: 20,
                                             ),
-                                          ),
-                                        ],
+                                            const SizedBox(width: 8),
+                                            Text(
+                                              displayTitle,
+                                              style: TextStyle(
+                                                color: contentColor,
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                     ),
                                   ),
                                 ),
-                              ),
 
-                              // --- BUTTONS ---
-                              Positioned(
-                                top: buttonsY,
-                                left: 0,
-                                right: 0,
-                                height: kToolbarHeight,
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                                  child: Row(
-                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                    children: [
-                                      if (context.canPop())
-                                        IconButton(
-                                          icon: Icon(Icons.arrow_back, color: contentColor),
-                                          onPressed: () => context.pop(),
-                                        )
-                                      else
-                                        const SizedBox(width: 48),
-                                      const Spacer(),
-                                      AnimatedSwitcher(
-                                        duration: const Duration(milliseconds: 300),
-                                        child: Row(
-                                          key: ValueKey(currentPath),
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: actions.map((action) {
-                                            return Row(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                IconButton(
-                                                  icon: Icon(action.icon, color: contentColor),
-                                                  onPressed: () => action.onPressed(context),
-                                                ),
-                                                const SizedBox(width: 4),
-                                              ],
-                                            );
-                                          }).toList(),
+                                // --- BUTTONS ---
+                                Positioned(
+                                  top: buttonsY,
+                                  left: 0,
+                                  right: 0,
+                                  height: kToolbarHeight,
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 4.0,
+                                    ),
+                                    child: Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        if (context.canPop())
+                                          IconButton(
+                                            icon: Icon(
+                                              Icons.arrow_back,
+                                              color: contentColor,
+                                            ),
+                                            onPressed: () => context.pop(),
+                                          )
+                                        else
+                                          const SizedBox(width: 48),
+                                        const Spacer(),
+                                        AnimatedSwitcher(
+                                          duration: const Duration(
+                                            milliseconds: 300,
+                                          ),
+                                          child: Row(
+                                            key: ValueKey(currentPath),
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: actions.map((action) {
+                                              return Row(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  IconButton(
+                                                    icon: Icon(
+                                                      action.icon,
+                                                      color: contentColor,
+                                                    ),
+                                                    onPressed: () => action
+                                                        .onPressed(context),
+                                                  ),
+                                                  const SizedBox(width: 4),
+                                                ],
+                                              );
+                                            }).toList(),
+                                          ),
                                         ),
-                                      ),
-                                      const SizedBox(width: 4),
-                                    ],
+                                        const SizedBox(width: 4),
+                                      ],
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ],
-                          ),
-                        );
-                      },
+                              ],
+                            ),
+                          );
+                        },
+                      ),
                     ),
-                  ),
-                ];
-              },
-              body: MediaQuery.removePadding(
-                context: context,
-                removeTop: true,
-                child: widget.child,
-              ),
+                  ];
+                },
+                body: MediaQuery.removePadding(
+                  context: context,
+                  removeTop: true,
+                  child: widget.child,
+                ),
               ),
             ),
           ),
@@ -348,7 +383,10 @@ class OneUiScrollPhysics extends ClampingScrollPhysics {
   const OneUiScrollPhysics({required this.boundary, super.parent});
   @override
   OneUiScrollPhysics applyTo(ScrollPhysics? ancestor) {
-    return OneUiScrollPhysics(boundary: boundary, parent: buildParent(ancestor));
+    return OneUiScrollPhysics(
+      boundary: boundary,
+      parent: buildParent(ancestor),
+    );
   }
 
   // Clamp the outer scroll position between 0 and boundary so body overscroll
@@ -365,21 +403,18 @@ class OneUiScrollPhysics extends ClampingScrollPhysics {
     }
     return 0.0;
   }
+
   @override
-  Simulation? createBallisticSimulation(ScrollMetrics position, double velocity) {
+  Simulation? createBallisticSimulation(
+    ScrollMetrics position,
+    double velocity,
+  ) {
     final isAtCollapsedBoundary = position.pixels >= boundary - 0.5;
     final isTryingToExpand = velocity < 0.0;
     if (isAtCollapsedBoundary && isTryingToExpand) return null;
     return super.createBallisticSimulation(position, velocity);
   }
 }
-
-
-
-
-
-
-
 
 CustomTransitionPage buildPageWithTransition({
   required BuildContext context,
@@ -392,24 +427,19 @@ CustomTransitionPage buildPageWithTransition({
 
   return CustomTransitionPage(
     key: state.pageKey,
-    child: child, 
-    // isLocked ? child : Padding(
-    //   padding: const EdgeInsets.only(top: 6.5),
-    //   child: child,
-    // )
-    // You can adjust duration separately for Locked vs Unlocked if you want, 
+    child: isLocked
+        ? child
+        : Padding(padding: const EdgeInsets.only(top: 6.5), child: child),
+
+    // You can adjust duration separately for Locked vs Unlocked if you want,
     // but keeping them same is usually fine.
     transitionDuration: const Duration(milliseconds: 400),
     reverseTransitionDuration: const Duration(milliseconds: 400),
     transitionsBuilder: (context, animation, secondaryAnimation, child) {
-      
       // 2. LOCKED: Use Flutter's built-in FadeTransition
       // This is the "Default" way to do a fade in Flutter.
       if (isLocked) {
-        return FadeTransition(
-          opacity: animation,
-          child: child,
-        );
+        return FadeTransition(opacity: animation, child: child);
       }
 
       // 3. UNLOCKED: Use your Custom Slide Transition
@@ -433,7 +463,11 @@ class SlideEnterTransition extends StatelessWidget {
   final Animation<double> animation;
   final Widget child;
 
-  const SlideEnterTransition({super.key, required this.animation, required this.child});
+  const SlideEnterTransition({
+    super.key,
+    required this.animation,
+    required this.child,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -441,10 +475,10 @@ class SlideEnterTransition extends StatelessWidget {
       animation: animation,
       builder: (context, child) {
         final bool isReverse = animation.status == AnimationStatus.reverse;
-        
+
         // Use the whole duration (0.0 -> 1.0) for maximum smoothness.
         // EaseOutCubic feels snappy but smooth.
-        double t = isReverse 
+        double t = isReverse
             ? Curves.easeInCubic.transform(animation.value) // Leave smooth
             : Curves.easeOutCubic.transform(animation.value); // Enter snappy
 
@@ -454,7 +488,7 @@ class SlideEnterTransition extends StatelessWidget {
           opacity: t,
           child: Transform.translate(
             // Slide UP from bottom (30px -> 0px)
-            offset: Offset(0, 15.0 * (1.0 - t)), 
+            offset: Offset(0, 15.0 * (1.0 - t)),
             child: child,
           ),
         );
@@ -469,7 +503,11 @@ class SlideExitTransition extends StatelessWidget {
   final Animation<double> animation;
   final Widget child;
 
-  const SlideExitTransition({super.key, required this.animation, required this.child});
+  const SlideExitTransition({
+    super.key,
+    required this.animation,
+    required this.child,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -479,7 +517,7 @@ class SlideExitTransition extends StatelessWidget {
         final bool isReverse = animation.status == AnimationStatus.reverse;
 
         // Use the whole duration.
-        double t = isReverse 
+        double t = isReverse
             ? Curves.easeInCubic.transform(animation.value)
             : Curves.easeOutCubic.transform(animation.value);
 
