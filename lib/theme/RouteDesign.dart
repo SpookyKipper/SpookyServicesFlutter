@@ -1,4 +1,5 @@
 import 'package:go_router/go_router.dart';
+import 'package:spookyservices/functions/theme.dart';
 import 'package:spookyservices/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 // ---------------------------------------------------------------------------
@@ -226,7 +227,7 @@ class _AppShellState extends State<AppShell> {
 
                           // Colors
                           final collapsedBg = const Color(0xfa6f65dc);
-                          final expandedBg = const Color(0x100f10);
+                          final expandedBg = cLD(collapsedBg, Color(0x100f10)) ;
                           print(
                             "Prrgress: $progress, $currentHeight, $collapsedHeight, $expandedHeight",
                           );
@@ -427,9 +428,10 @@ CustomTransitionPage buildPageWithTransition({
 
   return CustomTransitionPage(
     key: state.pageKey,
-    child: isLocked
-        ? child
-        : Padding(padding: const EdgeInsets.only(top: 6.5), child: child),
+    child: child,
+    // isLocked
+    //     ? child
+    //     : Padding(padding: const EdgeInsets.only(top: 6.5), child: child),
 
     // You can adjust duration separately for Locked vs Unlocked if you want,
     // but keeping them same is usually fine.
