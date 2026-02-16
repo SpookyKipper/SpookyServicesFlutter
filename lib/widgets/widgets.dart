@@ -161,7 +161,7 @@ class Button extends StatelessWidget {
 
     Color getBackgroundColor() {
       if (contrast) {
-        return cLD(colorScheme.onPrimaryContainer, colorScheme.onPrimary);
+        return cLD(colorScheme.onPrimaryContainer, Color(0xff232323));
       } else {
         return colorScheme.primaryContainer;
       }
@@ -180,3 +180,7 @@ class Button extends StatelessWidget {
     );
   }
 }
+
+
+
+
