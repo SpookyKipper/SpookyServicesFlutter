@@ -681,7 +681,7 @@ names, logos, or brand identity of the original author ("Brand Assets").
     you must ensure it does not confusingly resemble the original Spooky Services
     brand.
 
-    *   Requirement: We require that you change the primary brand colors in any
+    * Requirement: We require that you change the primary brand colors in any
         public deployment to distinguish your derivative work from the original
         project.
 
@@ -689,5 +689,22 @@ names, logos, or brand identity of the original author ("Brand Assets").
     You may not use the name "Spooky Services" or any associated logos in a way
     that implies endorsement, sponsorship, or official affiliation by the
     original author.
+
+4.  Attribution and Copyright Notice:
+    In accordance with the AGPLv3 requirements for attribution, any public 
+    deployment or distribution of this software (whether modified or unmodified) 
+    must prominently display an appropriate copyright notice, a reference to the 
+    AGPLv3 license, and a direct link back to the original source repository.
+
+    * Requirement: You must include the following (or a substantially similar) 
+        notice in a prominent location within the user interface of your 
+        application (e.g., an "About", "Credits", or "Legal" page) and within 
+        the source code documentation.
+
+    * Example Notice:
+        "This software incorporates components from the Spooky Services Flutter module.
+        Copyright (c) 2026 Spooky Services.
+        Source Code: https://github.com/SpookyKipper/SpookyServicesFlutter/
+        Licensed under AGPLv3."
 
 End of Trademark and Branding Notice.
